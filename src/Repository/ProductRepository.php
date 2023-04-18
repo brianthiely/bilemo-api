@@ -21,6 +21,13 @@ class ProductRepository extends ServiceEntityRepository
         parent::__construct($registry, Product::class);
     }
 
+    public function findAllWithPagination($offset, $limit) {
+        $qb = $this->createQueryBuilder('b')
+            ->setFirstResult(($offset - 1) * $limit)
+            ->setMaxResults($limit);
+        return $qb->getQuery()->getResult();
+    }
+
     public function save(Product $entity, bool $flush = false): void
     {
         $this->getEntityManager()->persist($entity);

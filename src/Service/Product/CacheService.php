@@ -50,6 +50,13 @@ class CacheService
 
     }
 
+
+    /**
+     * Get cached product
+     *
+     * @param string $jsonProduct
+     * @return void
+     */
     public function cacheProduct(string $jsonProduct): void
     {
         $productData = json_decode($jsonProduct, true);

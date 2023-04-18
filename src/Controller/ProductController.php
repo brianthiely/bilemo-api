@@ -123,9 +123,11 @@ class ProductController extends AbstractController
         if (!$product) {
             return new JsonResponse(['error' => 'Product not found'], Response::HTTP_NOT_FOUND);
         }
+
         $jsonProduct = $this->retrievalService->serializeProduct($product);
         $this->cacheService->cacheProduct($jsonProduct);
 
         return new JsonResponse($jsonProduct, Response::HTTP_OK, [], true);
     }
+
 }

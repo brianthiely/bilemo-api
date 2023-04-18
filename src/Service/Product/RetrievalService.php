@@ -4,9 +4,9 @@ namespace App\Service\Product;
 
 use App\Entity\Product;
 use App\Repository\ProductRepository;
-use RuntimeException;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Symfony\Component\Serializer\SerializerInterface;
+use JMS\Serializer\SerializationContext;
+use JMS\Serializer\SerializerInterface;
+
 
 class RetrievalService
 {
@@ -73,7 +73,8 @@ class RetrievalService
      */
     public function serializeProductList(array $productList): string
     {
-        return $this->serializer->serialize($productList, 'json');
+        $context = SerializationContext::create()->setGroups(['products:read']);
+        return $this->serializer->serialize($productList, 'json', $context);
 
     }
 
@@ -86,7 +87,8 @@ class RetrievalService
      */
     public function serializeProduct(Product $product): string
     {
-            return $this->serializer->serialize($product, 'json');
+        $context = SerializationContext::create()->setGroups(['product:read']);
+        return $this->serializer->serialize($product, 'json', $context);
 
     }
 

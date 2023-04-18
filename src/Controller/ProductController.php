@@ -16,8 +16,19 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class ProductController extends AbstractController
 {
+    /**
+     * @var RetrievalService Used for retrieving product data.
+     */
     private RetrievalService $retrievalService;
+
+    /**
+     * @var PaginationService Used for pagination.
+     */
     private PaginationService $paginationService;
+
+    /**
+     * @var CacheService Used for caching product data.
+     */
     private CacheService $cacheService;
 
 

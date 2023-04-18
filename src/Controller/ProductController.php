@@ -20,12 +20,12 @@ class ProductController extends AbstractController
     private PaginationService $paginationService;
     private CacheService $cacheService;
 
+
     public function __construct(RetrievalService $retrievalService, PaginationService $paginationService, CacheService $cacheService)
     {
         $this->retrievalService = $retrievalService;
         $this->paginationService = $paginationService;
         $this->cacheService = $cacheService;
-
     }
 
     /**

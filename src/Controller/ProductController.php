@@ -16,22 +16,20 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class ProductController extends AbstractController
 {
-    /**
-     * @var RetrievalService Used for retrieving product data.
-     */
+
+
     private RetrievalService $retrievalService;
-
-    /**
-     * @var PaginationService Used for pagination.
-     */
     private PaginationService $paginationService;
-
-    /**
-     * @var CacheService Used for caching product data.
-     */
     private CacheService $cacheService;
 
 
+    /**
+     * Inject services into the controller.
+     *
+     * @param RetrievalService $retrievalService
+     * @param PaginationService $paginationService
+     * @param CacheService $cacheService
+     */
     public function __construct(RetrievalService $retrievalService, PaginationService $paginationService, CacheService $cacheService)
     {
         $this->retrievalService = $retrievalService;
@@ -70,6 +68,7 @@ class ProductController extends AbstractController
      *     ),
      *     @OA\Response(response="400", description="Bad request")
      * )
+     *
      *
      * @return JsonResponse
      * @throws BadRequestHttpException

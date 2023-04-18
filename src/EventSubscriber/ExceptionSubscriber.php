@@ -12,6 +12,12 @@ class ExceptionSubscriber implements EventSubscriberInterface
 {
 
 
+    /**
+     * Handle exceptions
+     *
+     * @param ExceptionEvent $event
+     * @return void
+     */
     public function onKernelException(ExceptionEvent $event): void
     {
         $exception = $event->getThrowable();
@@ -33,6 +39,11 @@ class ExceptionSubscriber implements EventSubscriberInterface
     }
 
 
+    /**
+     * Get subscribed events
+     *
+     * @return array
+     */
     public static function getSubscribedEvents(): array
     {
         return [KernelEvents::EXCEPTION => 'onKernelException'];

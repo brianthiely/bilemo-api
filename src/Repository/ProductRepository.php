@@ -17,6 +17,7 @@ use Doctrine\Persistence\ManagerRegistry;
 class ProductRepository extends ServiceEntityRepository
 {
 
+
     /**
      * ProductRepository constructor.
      *
@@ -46,6 +47,14 @@ class ProductRepository extends ServiceEntityRepository
         return $qb->getQuery()->getResult();
     }
 
+
+    /**
+     * Saves a product.
+     *
+     * @param Product $entity
+     * @param bool $flush
+     * @return void
+     */
     public function save(Product $entity, bool $flush = false): void
     {
         $this->getEntityManager()->persist($entity);
@@ -55,6 +64,14 @@ class ProductRepository extends ServiceEntityRepository
         }
     }
 
+
+    /**
+     * Removes a product.
+     *
+     * @param Product $entity
+     * @param bool $flush
+     * @return void
+     */
     public function remove(Product $entity, bool $flush = false): void
     {
         $this->getEntityManager()->remove($entity);

@@ -8,16 +8,31 @@ use Symfony\Component\Serializer\SerializerInterface;
 
 class RetrievalService
 {
+
+
     private ProductRepository $productRepository;
     private SerializerInterface $serializer;
     private PaginationService $paginationService;
 
+    /**
+     * RetrievalService constructor.
+     *
+     * @param ProductRepository $productRepository
+     * @param SerializerInterface $serializer
+     * @param PaginationService $paginationService
+     */
     public function __construct(ProductRepository $productRepository, SerializerInterface $serializer, PaginationService $paginationService)
     {
         $this->productRepository = $productRepository;
         $this->serializer = $serializer;
         $this->paginationService = $paginationService;
     }
+
+    /**
+     * Get product list
+     *
+     * @return array
+     */
     public function getProductList(): array
     {
         $offset = $this->paginationService->getOffset();
@@ -25,6 +40,12 @@ class RetrievalService
         return $this->productRepository->findAllWithPagination($offset, $limit);
     }
 
+    /**
+     * Serialize product list
+     *
+     * @param array $productList
+     * @return string
+     */
     public function serializeProductList(array $productList): string
     {
         try {

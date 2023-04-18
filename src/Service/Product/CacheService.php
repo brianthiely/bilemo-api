@@ -50,4 +50,20 @@ class CacheService
 
     }
 
+    public function cacheProduct(string $jsonProduct): void
+    {
+        $productData = json_decode($jsonProduct, true);
+        $productId = $productData['productId'] ?? null;
+
+        $item = $this->cache->getItem("product_{$productId}");
+        $item->tag("productsCache");
+
+        $expiresAt = new \DateTimeImmutable('+1 hour');
+        $item->set($jsonProduct);
+        $item->expiresAt($expiresAt);
+
+        $this->cache->save($item);
+    }
+
+
 }

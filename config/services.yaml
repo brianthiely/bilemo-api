@@ -6,6 +6,12 @@
 parameters:
 
 services:
+    App\Controller\ProductController:
+        arguments:
+            - '@App\Service\Product\RetrievalService'
+            - '@App\Service\Product\PaginationService'
+            - '@App\Service\Product\CacheService'
+
     # default configuration for services in *this* file
     _defaults:
         autowire: true      # Automatically injects dependencies in your services.

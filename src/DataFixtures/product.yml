@@ -1,0 +1,6 @@
+App\Entity\Product:
+  product{1..50}:
+      name: '<regexify("(iPhone|Galaxy|Pixel|OnePlus|Xperia|Redmi|Mi) [0-9]{1,2}")>'
+      brand: '<randomElement(["Apple", "Samsung", "Xiaomi", "Huawei", "OnePlus", "Google", "LG", "Motorola", "Sony", "Nokia"])>'
+      price: '<numberBetween(500, 2000)>'
+      description: '<paragraph(3)>'

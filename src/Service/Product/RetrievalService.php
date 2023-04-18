@@ -16,6 +16,7 @@ class RetrievalService
 
     private PaginationService $paginationService;
 
+
     /**
      * RetrievalService constructor.
      *
@@ -28,6 +29,7 @@ class RetrievalService
         $this->productRepository = $productRepository;
         $this->serializer = $serializer;
         $this->paginationService = $paginationService;
+
     }
 
 
@@ -41,6 +43,7 @@ class RetrievalService
         $offset = $this->paginationService->getOffset();
         $limit = $this->paginationService->getLimit();
         return $this->productRepository->findAllWithPagination($offset, $limit);
+
     }
 
 
@@ -55,7 +58,7 @@ class RetrievalService
         try {
             return $this->serializer->serialize($productList, 'json');
         } catch (RuntimeException  $e) {
-            throw new RuntimeException ('Unable to serialize product list');
+            throw new RuntimeException('An error occurred while serializing the product list: ' . $e->getMessage(), $e->getCode(), $e);
         }
 
     }

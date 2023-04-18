@@ -12,6 +12,7 @@ class CacheService
 
     private TagAwareCacheInterface $cache;
 
+
     /**
      * CacheService constructor.
      *
@@ -22,6 +23,7 @@ class CacheService
     {
         $this->paginationService = $paginationService;
         $this->cache = $cache;
+
     }
 
 
@@ -45,6 +47,7 @@ class CacheService
         $item->expiresAt($expiresAt);
 
         $this->cache->save($item);
+
     }
 
 }

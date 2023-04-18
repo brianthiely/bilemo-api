@@ -41,7 +41,7 @@ class ProductRepository extends ServiceEntityRepository
      */
     public function findAllWithPagination(int $offset, int $limit): array
     {
-        $qb = $this->createQueryBuilder('b')
+        $qb = $this->createQueryBuilder('product')
             ->setFirstResult(($offset - 1) * $limit)
             ->setMaxResults($limit);
         return $qb->getQuery()->getResult();

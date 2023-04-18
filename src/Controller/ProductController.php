@@ -39,6 +39,7 @@ class ProductController extends AbstractController
         $this->cacheService = $cacheService;
     }
 
+
     /**
      * Retrieve a paginated list of all products.
      *
@@ -86,4 +87,5 @@ class ProductController extends AbstractController
 
         return new JsonResponse($jsonProductList, Response::HTTP_OK, [], true);
     }
+
 }

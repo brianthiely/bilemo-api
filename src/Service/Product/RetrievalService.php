@@ -30,6 +30,7 @@ class RetrievalService
         $this->paginationService = $paginationService;
     }
 
+
     /**
      * Get product list
      *
@@ -41,6 +42,7 @@ class RetrievalService
         $limit = $this->paginationService->getLimit();
         return $this->productRepository->findAllWithPagination($offset, $limit);
     }
+
 
     /**
      * Serialize product list
@@ -55,5 +57,7 @@ class RetrievalService
         } catch (RuntimeException  $e) {
             throw new RuntimeException ('Unable to serialize product list');
         }
+
     }
+
 }

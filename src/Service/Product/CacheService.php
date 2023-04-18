@@ -24,6 +24,7 @@ class CacheService
         $this->cache = $cache;
     }
 
+
     /**
      * Get cached product list
      *
@@ -45,4 +46,5 @@ class CacheService
 
         $this->cache->save($item);
     }
+
 }

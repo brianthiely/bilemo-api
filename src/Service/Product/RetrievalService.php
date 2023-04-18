@@ -11,7 +11,9 @@ class RetrievalService
 
 
     private ProductRepository $productRepository;
+
     private SerializerInterface $serializer;
+
     private PaginationService $paginationService;
 
     /**

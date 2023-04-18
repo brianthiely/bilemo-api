@@ -19,7 +19,9 @@ class ProductController extends AbstractController
 
 
     private RetrievalService $retrievalService;
+
     private PaginationService $paginationService;
+
     private CacheService $cacheService;
 
 

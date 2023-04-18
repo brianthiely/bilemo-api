@@ -9,6 +9,7 @@ class CacheService
 
 
     private PaginationService $paginationService;
+
     private TagAwareCacheInterface $cache;
 
     /**

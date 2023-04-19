@@ -5,25 +5,44 @@ namespace App\Entity;
 use App\Repository\ProductRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation\Groups;
+use Hateoas\Configuration\Annotation as Hateoas;
 
+
+/**
+ * @Hateoas\Relation(
+ *      "self",
+ *      href = @Hateoas\Route(
+ *          "get_product_by_id",
+ *          parameters = { "productId" = "expr(object.getProductId())" }
+ *      ),
+ *      exclusion = @Hateoas\Exclusion(groups="products:read")
+ * )
+ *
+ */
 #[ORM\Entity(repositoryClass: ProductRepository::class)]
 class Product
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['products:read', 'product:read'])]
     private ?int $productId = null;
 
     #[ORM\Column(length: 42)]
+    #[Groups(['products:read', 'product:read'])]
     private ?string $name = null;
 
     #[ORM\Column(length: 42)]
+    #[Groups(['products:read', 'product:read'])]
     private ?string $brand = null;
 
     #[ORM\Column]
+    #[Groups(['products:read', 'product:read'])]
     private ?int $price = null;
 
     #[ORM\Column(type: Types::TEXT)]
+    #[Groups(['products:read', 'product:read'])]
     private ?string $description = null;
 
     public function getProductId(): ?int

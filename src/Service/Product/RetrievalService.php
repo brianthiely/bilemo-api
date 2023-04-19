@@ -2,9 +2,11 @@
 
 namespace App\Service\Product;
 
+use App\Entity\Product;
 use App\Repository\ProductRepository;
-use RuntimeException;
-use Symfony\Component\Serializer\SerializerInterface;
+use JMS\Serializer\SerializationContext;
+use JMS\Serializer\SerializerInterface;
+
 
 class RetrievalService
 {
@@ -48,6 +50,22 @@ class RetrievalService
 
 
     /**
+     * Get product by ID
+     *
+     * @param int $productId
+     * @return object|null
+     */
+    public function getProductById(int $productId): ?object
+    {
+        $product = $this->productRepository->find($productId);
+        if (!$product) {
+            return null;
+        }
+        return $product;
+    }
+
+
+    /**
      * Serialize product list
      *
      * @param array $productList
@@ -55,11 +73,22 @@ class RetrievalService
      */
     public function serializeProductList(array $productList): string
     {
-        try {
-            return $this->serializer->serialize($productList, 'json');
-        } catch (RuntimeException  $e) {
-            throw new RuntimeException('An error occurred while serializing the product list: ' . $e->getMessage(), $e->getCode(), $e);
-        }
+        $context = SerializationContext::create()->setGroups(['products:read']);
+        return $this->serializer->serialize($productList, 'json', $context);
+
+    }
+
+
+    /**
+     * Serialize product
+     *
+     * @param Product $product
+     * @return string
+     */
+    public function serializeProduct(Product $product): string
+    {
+        $context = SerializationContext::create()->setGroups(['product:read']);
+        return $this->serializer->serialize($product, 'json', $context);
 
     }
 

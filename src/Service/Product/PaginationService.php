@@ -32,11 +32,8 @@ class PaginationService
     public function getOffset(): int
     {
         $request = $this->requestStack->getCurrentRequest();
-        $offset = $request->query->filter('offset', 1, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
-        if ($offset === false) {
-            throw new BadRequestHttpException('Invalid offset parameter');
-        }
-        return $offset;
+        return $request->query->filter('offset', 1, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
+
     }
 
 
@@ -50,10 +47,7 @@ class PaginationService
     public function getLimit(): int
     {
         $request = $this->requestStack->getCurrentRequest();
-        $limit = $request->query->filter('limit', 3, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
-        if ($limit === false) {
-            throw new BadRequestHttpException('Invalid limit parameter');
-        }
-        return $limit;
+        return $request->query->filter('limit', 3, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
+
     }
 }

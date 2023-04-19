@@ -88,4 +88,46 @@ class ProductController extends AbstractController
         return new JsonResponse($jsonProductList, Response::HTTP_OK, [], true);
     }
 
+
+    /**
+     * Retrieve a product by its id.
+     *
+     * @OA\Get(
+     *     path="/api/products/{productId}",
+     *     summary="Retrieve a product by its id",
+     *     tags={"Products"},
+     *     @OA\Response(
+     *         response="200",
+     *         description="Product",
+     *         @OA\JsonContent(ref=@Model(type=Product::class))
+     *     ),
+     *     @OA\Parameter(
+     *         name="productId",
+     *         in="path",
+     *         description="Product id",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(response="404", description="Product not found")
+     * )
+     *
+     *
+     * @param int $productId
+     * @return JsonResponse
+     * @throws BadRequestHttpException
+     */
+    #[Route('/api/products/{productId}', name: 'get_product_by_id', methods: ['GET'])]
+    public function getProductById(int $productId): JsonResponse
+    {
+        $product = $this->retrievalService->getProductById($productId);
+        if (!$product) {
+            return new JsonResponse(['error' => 'Product not found'], Response::HTTP_NOT_FOUND);
+        }
+
+        $jsonProduct = $this->retrievalService->serializeProduct($product);
+        $this->cacheService->cacheProduct($jsonProduct);
+
+        return new JsonResponse($jsonProduct, Response::HTTP_OK, [], true);
+    }
+
 }

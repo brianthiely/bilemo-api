@@ -1,0 +1,12 @@
+@startuml
+title Consulter la liste des produits BileMo
+
+actor Client
+
+Client -> API : Demande la liste des produits
+API -> Database : Requête pour récupérer la liste des produits
+Database --> API : Renvoie la liste des produits
+API --> Client : Renvoie la liste des produits
+@enduml
+
+

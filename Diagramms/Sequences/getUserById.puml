@@ -1,0 +1,10 @@
+@startuml
+title Consulter le détail d'un utilisateur inscrit lié à un client
+
+actor Client
+
+Client -> API : Demande les détails d'un utilisateur
+API -> Database : Requête pour récupérer les détails de l'utilisateur lié au client
+Database --> API : Renvoie les détails de l'utilisateur
+API --> Client : Renvoie les détails de l'utilisateur
+@enduml

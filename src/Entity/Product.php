@@ -17,7 +17,7 @@ use Hateoas\Configuration\Annotation as Hateoas;
  *          parameters = { "productId" = "expr(object.getProductId())" }
  *      ),
  *      exclusion = @Hateoas\Exclusion(groups="products:read")
- * )
+ * )um
  *
  */
 #[ORM\Entity(repositoryClass: ProductRepository::class)]
@@ -44,6 +44,22 @@ class Product
     #[ORM\Column(type: Types::TEXT)]
     #[Groups(['products:read', 'product:read'])]
     private ?string $description = null;
+
+    #[ORM\Column(length: 512)]
+    #[Groups(['products:read', 'product:read'])]
+    private ?string $picture = null;
+
+    #[ORM\Column]
+    #[Groups(['products:read', 'product:read'])]
+    private int $screenSize;
+
+    #[ORM\Column]
+    #[Groups(['products:read', 'product:read'])]
+    private string $color;
+
+    #[ORM\Column]
+    #[Groups(['products:read', 'product:read'])]
+    private int $storageCapacity;
 
     public function getProductId(): ?int
     {
@@ -97,4 +113,69 @@ class Product
 
         return $this;
     }
+
+    /**
+     * @return string|null
+     */
+    public function getPicture(): ?string
+    {
+        return $this->picture;
+    }
+
+    /**
+     * @param string|null $picture
+     */
+    public function setPicture(?string $picture): void
+    {
+        $this->picture = $picture;
+    }
+
+    /**
+     * @return Float
+     */
+    public function getScreenSize(): float
+    {
+        return $this->screenSize;
+    }
+
+    /**
+     * @param Float $screenSize
+     */
+    public function setScreenSize(float $screenSize): void
+    {
+        $this->screenSize = $screenSize;
+    }
+
+    /**
+     * @return string
+     */
+    public function getColor(): string
+    {
+        return $this->color;
+    }
+
+    /**
+     * @param string $color
+     */
+    public function setColor(string $color): void
+    {
+        $this->color = $color;
+    }
+
+    /**
+     * @return int
+     */
+    public function getStorageCapacity(): int
+    {
+        return $this->storageCapacity;
+    }
+
+    /**
+     * @param int $storageCapacity
+     */
+    public function setStorageCapacity(int $storageCapacity): void
+    {
+        $this->storageCapacity = $storageCapacity;
+    }
+
 }

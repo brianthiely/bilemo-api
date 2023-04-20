@@ -4,3 +4,8 @@ App\Entity\Product:
       brand: '<randomElement(["Apple", "Samsung", "Xiaomi", "Huawei", "OnePlus", "Google", "LG", "Motorola", "Sony", "Nokia"])>'
       price: '<numberBetween(500, 2000)>'
       description: '<paragraph(3)>'
+      picture: '<imageUrl(480, 640)>'
+      screenSize: '<numberBetween(5, 7)>'
+      color: '<randomElement(["Noir", "Blanc", "Rouge", "Bleu", "Vert", "Rose", "Gris", "Jaune", "Orange"])>'
+      storageCapacity: '<randomElement(["128", "256", "512"])>'
+

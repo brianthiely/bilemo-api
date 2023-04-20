@@ -12,6 +12,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
 class ProductController extends AbstractController
@@ -117,11 +118,11 @@ class ProductController extends AbstractController
      * @throws BadRequestHttpException
      */
     #[Route('/api/products/{productId}', name: 'get_product_by_id', methods: ['GET'])]
-    public function getProductById(int $productId): JsonResponse
+    public function getProductById(int $productId): JsonResponse|NotFoundHttpException
     {
         $product = $this->retrievalService->getProductById($productId);
         if (!$product) {
-            return new JsonResponse(['error' => 'Product not found'], Response::HTTP_NOT_FOUND);
+            return new NotFoundHttpException('Product not found');
         }
 
         $jsonProduct = $this->retrievalService->serializeProduct($product);

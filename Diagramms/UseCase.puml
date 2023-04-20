@@ -1,0 +1,31 @@
+@startuml
+left to right direction
+skinparam packageStyle rectangle
+
+actor Client
+
+rectangle "BileMo API" {
+  usecase "Authentification via OAuth" as UC1
+  usecase "Consulter la liste des produits BileMo" as UC2
+  usecase "Consulter les détails d'un produit BileMo" as UC3
+  usecase "Consulter la liste des utilisateurs inscrits" as UC4
+  usecase "Consulter le détail d'un utilisateur inscrit" as UC5
+  usecase "Ajouter un nouvel utilisateur" as UC6
+  usecase "Supprimer un utilisateur ajouté par un client" as UC7
+
+  Client --> UC1
+  Client --> UC2
+  Client --> UC3
+  Client --> UC4
+  Client --> UC5
+  Client --> UC6
+  Client --> UC7
+
+  UC2 --> UC1 : include
+  UC3 --> UC1 : include
+  UC4 --> UC1 : include
+  UC5 --> UC1 : include
+  UC6 --> UC1 : include
+  UC7 --> UC1 : include
+}
+@enduml

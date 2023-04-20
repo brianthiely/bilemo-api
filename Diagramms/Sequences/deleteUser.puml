@@ -1,0 +1,10 @@
+@startuml
+title Supprimer un utilisateur ajouté par un client
+
+actor Client
+
+Client -> API : Envoie l'ID de l'utilisateur à supprimer
+API -> Database : Supprime l'utilisateur lié au client
+Database --> API : Confirme la suppression de l'utilisateur
+API --> Client : Confirme la suppression de l'utilisateur
+@enduml

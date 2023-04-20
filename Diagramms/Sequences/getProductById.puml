@@ -1,0 +1,10 @@
+@startuml
+title Consulter les détails d'un produit BileMo
+
+actor Client
+
+Client -> API : Demande les détails d'un produit
+API -> Database : Requête pour récupérer les détails du produit
+Database --> API : Renvoie les détails du produit
+API --> Client : Renvoie les détails du produit
+@enduml

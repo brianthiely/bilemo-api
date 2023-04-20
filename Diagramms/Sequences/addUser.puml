@@ -1,0 +1,9 @@
+@startuml
+title Ajouter un nouvel utilisateur
+actor Client
+
+Client -> API : Envoie les informations du nouvel utilisateur à ajouter
+API -> Database : Ajoute le nouvel utilisateur lié au client
+Database --> API : Confirme l'ajout du nouvel utilisateur
+API --> Client : Confirme l'ajout du nouvel utilisateur
+@enduml

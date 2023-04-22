@@ -3,11 +3,11 @@
 namespace App\Controller;
 
 use App\Entity\Product;
-use App\Service\Product\CacheService;
+use App\Service\Cache\CacheService;
 use App\Service\Product\PaginationService;
 use App\Service\Product\RetrievalService;
-use OpenApi\Annotations as OA;
 use Nelmio\ApiDocBundle\Annotation\Model;
+use OpenApi\Annotations as OA;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -80,14 +80,24 @@ class ProductController extends AbstractController
     #[Route('/api/products', name: 'get_products_paginated', methods: ['GET'])]
     public function getAllProducts(): JsonResponse
     {
-        $this->paginationService->getOffset();
-        $this->paginationService->getLimit();
-        $productList = $this->retrievalService->getProductList();
-        $jsonProductList = $this->retrievalService->serializeProductList($productList);
-        $this->cacheService->cacheProductList($jsonProductList);
+        $offset = $this->paginationService->getOffset();
+        $limit = $this->paginationService->getLimit();
+
+        $key = "product_list_{$offset}_{$limit}";
+        $jsonProductList = $this->cacheService->get($key);
+
+        if ($jsonProductList === null) {
+            $productList = $this->retrievalService->getProductList();
+            $jsonProductList = $this->retrievalService->serializeProductList($productList);
+
+            $expiresAt = new \DateTimeImmutable('+1 hour');
+            $tags = ['productsCache'];
+            $this->cacheService->cache($key, $jsonProductList, $expiresAt, $tags);
+        }
 
         return new JsonResponse($jsonProductList, Response::HTTP_OK, [], true);
     }
+
 
 
     /**
@@ -118,15 +128,23 @@ class ProductController extends AbstractController
      * @throws BadRequestHttpException
      */
     #[Route('/api/products/{productId}', name: 'get_product_by_id', methods: ['GET'])]
-    public function getProductById(int $productId): JsonResponse|NotFoundHttpException
+    public function getProductById(int $productId): JsonResponse
     {
         $product = $this->retrievalService->getProductById($productId);
         if (!$product) {
-            return new NotFoundHttpException('Product not found');
+            throw new NotFoundHttpException('Product not found');
         }
 
-        $jsonProduct = $this->retrievalService->serializeProduct($product);
-        $this->cacheService->cacheProduct($jsonProduct);
+        $key = "product_{$productId}";
+        $jsonProduct = $this->cacheService->get($key);
+
+        if ($jsonProduct === null) {
+            $jsonProduct = $this->retrievalService->serializeProduct($product);
+
+            $expiresAt = new \DateTimeImmutable('+1 hour');
+            $tags = ['productsCache'];
+            $this->cacheService->cache($key, $jsonProduct, $expiresAt, $tags);
+        }
 
         return new JsonResponse($jsonProduct, Response::HTTP_OK, [], true);
     }

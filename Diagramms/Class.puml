@@ -25,9 +25,7 @@ class Client {
     - String company
     - String contactName
     - String contactEmail
-    - String contactPhone
     - Date createdAt
-    - String AccessToken
     - ArrayList<User> users
 
     + addUser(User)

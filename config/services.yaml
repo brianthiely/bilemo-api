@@ -10,7 +10,7 @@ services:
         arguments:
             - '@App\Service\Product\RetrievalService'
             - '@App\Service\Product\PaginationService'
-            - '@App\Service\Product\CacheService'
+            - '@App\Service\Cache\CacheService'
 
     # default configuration for services in *this* file
     _defaults:

@@ -1,0 +1,6 @@
+App\Entity\Client:
+  client{1..10}:
+    email: '<email()>'
+    password: '<password()>'
+    roles: '["ROLE_CLIENT"]'
+

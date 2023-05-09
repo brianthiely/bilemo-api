@@ -70,7 +70,7 @@ class ProductController extends AbstractController
      *         required=false,
      *         @OA\Schema(type="integer", default="3")
      *     ),
-     *     @OA\Response(response="400", description="Bad request")
+     *     @OA\Response(response="401", description="Unauthorized"),
      * )
      *
      *

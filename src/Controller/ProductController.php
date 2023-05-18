@@ -87,9 +87,7 @@ class ProductController extends AbstractController
         $jsonProductList = $this->cacheService->get($key);
 
         if ($jsonProductList === null) {
-            $productList = $this->retrievalService->getProductList();
-            $jsonProductList = $this->retrievalService->serializeProductList($productList);
-
+            $jsonProductList = $this->retrievalService->getProductList();
             $expiresAt = new \DateTimeImmutable('+1 hour');
             $tags = ['productsCache'];
             $this->cacheService->cache($key, $jsonProductList, $expiresAt, $tags);
@@ -131,16 +129,15 @@ class ProductController extends AbstractController
     #[Route('/api/products/{productId}', name: 'get_product_by_id', methods: ['GET'])]
     public function getProductById(int $productId): JsonResponse
     {
-        $product = $this->retrievalService->getProductById($productId);
-        if (!$product) {
-            throw new NotFoundHttpException('Product not found');
-        }
-
         $key = "product_{$productId}";
         $jsonProduct = $this->cacheService->get($key);
 
         if ($jsonProduct === null) {
-            $jsonProduct = $this->retrievalService->serializeProduct($product);
+            $jsonProduct = $this->retrievalService->getProductById($productId);
+
+            if (!$jsonProduct) {
+                throw new NotFoundHttpException('Product not found');
+            }
 
             $expiresAt = new \DateTimeImmutable('+1 hour');
             $tags = ['productsCache'];

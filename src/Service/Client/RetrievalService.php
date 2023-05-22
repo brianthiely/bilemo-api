@@ -5,6 +5,7 @@ namespace App\Service\Client;
 use App\Entity\Client;
 use App\Entity\User;
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\Collection;
 
 
 class RetrievalService
@@ -17,7 +18,7 @@ class RetrievalService
 
     }
 
-    public function getUserList(Client $client): string
+    public function getUserList(Client $client): Collection
     {
         return $client->getUsers();
     }

@@ -3,23 +3,29 @@
 namespace App\Service\Client;
 
 use App\Entity\Client;
-use App\Service\Serializer\SerializerService;
+use App\Entity\User;
+use App\Repository\UserRepository;
 
 
 class RetrievalService
 {
-    private SerializerService $serializerService;
+    private UserRepository $userRepository;
 
-    public function __construct(SerializerService $serializerService)
+    public function __construct(UserRepository $userRepository)
     {
-        $this->serializerService = $serializerService;
+        $this->userRepository = $userRepository;
 
     }
 
     public function getUserList(Client $client): string
     {
-        $userList = $client->getUsers();
-        return $this->serializerService->serialize($userList, ['users:read']);
+        return $client->getUsers();
     }
+
+    public function getUserById(int $userId): ?User
+    {
+        return $this->userRepository->find($userId);
+    }
+
 
 }

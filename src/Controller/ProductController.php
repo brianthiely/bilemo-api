@@ -6,13 +6,13 @@ use App\Entity\Product;
 use App\Service\Cache\CacheService;
 use App\Service\Product\PaginationService;
 use App\Service\Product\RetrievalService;
+use App\Service\Serializer\SerializerService;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use OpenApi\Annotations as OA;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
 class ProductController extends AbstractController
@@ -25,6 +25,7 @@ class ProductController extends AbstractController
 
     private CacheService $cacheService;
 
+    private SerializerService $serializerService;
 
     /**
      * Inject services into the controller.
@@ -33,11 +34,13 @@ class ProductController extends AbstractController
      * @param PaginationService $paginationService
      * @param CacheService $cacheService
      */
-    public function __construct(RetrievalService $retrievalService, PaginationService $paginationService, CacheService $cacheService)
+    public function __construct(RetrievalService $retrievalService, PaginationService $paginationService, CacheService $cacheService, SerializerService $serializerService)
     {
         $this->retrievalService = $retrievalService;
         $this->paginationService = $paginationService;
         $this->cacheService = $cacheService;
+        $this->serializerService = $serializerService;
+
     }
 
 
@@ -87,7 +90,9 @@ class ProductController extends AbstractController
         $jsonProductList = $this->cacheService->get($key);
 
         if ($jsonProductList === null) {
-            $jsonProductList = $this->retrievalService->getProductList();
+            $productList = $this->retrievalService->getProductList();
+            $jsonProductList = $this->serializerService->serialize($productList, ['products:read']);
+
             $expiresAt = new \DateTimeImmutable('+1 hour');
             $tags = ['productsCache'];
             $this->cacheService->cache($key, $jsonProductList, $expiresAt, $tags);
@@ -133,11 +138,8 @@ class ProductController extends AbstractController
         $jsonProduct = $this->cacheService->get($key);
 
         if ($jsonProduct === null) {
-            $jsonProduct = $this->retrievalService->getProductById($productId);
-
-            if (!$jsonProduct) {
-                throw new NotFoundHttpException('Product not found');
-            }
+            $product = $this->retrievalService->getProductById($productId);
+            $jsonProduct = $this->serializerService->serialize($product, ['products:read']);
 
             $expiresAt = new \DateTimeImmutable('+1 hour');
             $tags = ['productsCache'];

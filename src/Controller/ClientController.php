@@ -7,8 +7,10 @@ use App\Entity\User;
 use App\Service\Cache\CacheService;
 use App\Service\Client\RetrievalService;
 use App\Service\Serializer\SerializerService;
+use App\Service\User\UserManager;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
@@ -24,11 +26,14 @@ class ClientController extends AbstractController
 
     private SerializerService $serializerService;
 
-    public function __construct(RetrievalService $retrievalService, CacheService $cacheService, SerializerService $serializerService)
+    private UserManager $userManager;
+
+    public function __construct(RetrievalService $retrievalService, CacheService $cacheService, SerializerService $serializerService, UserManager $userManager)
     {
         $this->retrievalService = $retrievalService;
         $this->cacheService = $cacheService;
         $this->serializerService = $serializerService;
+        $this->userManager = $userManager;
 
     }
 
@@ -45,7 +50,7 @@ class ClientController extends AbstractController
      *         description="List of users",
      *         @OA\JsonContent(
      *             type="array",
-     *             @OA\Items(ref=@Model(type=Client::class))
+     *             @OA\Items(ref=@Model(type=User::class))
      *         )
      *     ),
      * )
@@ -89,7 +94,7 @@ class ClientController extends AbstractController
      *         description="User",
      *         @OA\JsonContent(
      *             type="array",
-     *             @OA\Items(ref=@Model(type=Client::class))
+     *             @OA\Items(ref=@Model(type=User::class))
      *         )
      *     ),
      * )
@@ -111,4 +116,51 @@ class ClientController extends AbstractController
 
         return new JsonResponse($jsonUser, Response::HTTP_OK, [], true);
     }
+
+
+    /**
+     * Add a user.
+     *
+     * @OA\Post(
+     *     path="/api/users",
+     *     summary="Add a user",
+     *     tags={"Users"},
+     *     @OA\Response(
+     *         response="200",
+     *         description="User",
+     *         @OA\JsonContent(
+     *             type="array",
+     *             @OA\Items(ref=@Model(type=User::class))
+     *         )
+     *     ),
+     *     @OA\RequestBody(
+     *     @OA\JsonContent(
+     *     type="object",
+     *     @OA\Property(property="firstname", type="string"),
+     *     @OA\Property(property="lastname", type="string"),
+     *
+     *     )
+     *    )
+     *
+     * )
+     */
+    #[Route('/api/users', name: 'add_user', methods: ['POST'])]
+    public function addUser(Request $request): JsonResponse
+    {
+        $data = json_decode($request->getContent(), true);
+
+        $savedUser = $this->userManager->saveUser($data);
+
+        /** @var Client $client */
+        $client = $this->getUser();
+        $user = $client->addUser($savedUser);
+
+        $jsonUser = $this->serializerService->serialize($user, ['user:read']);
+
+        return new JsonResponse($jsonUser, Response::HTTP_CREATED, [], true);
+    }
+
+
+
+
 }

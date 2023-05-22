@@ -1,0 +1,18 @@
+@startuml
+actor Client
+participant "Propriétaire des ressources" as RO
+participant "Serveur d'autorisation" as AS
+participant "Serveur de ressources" as RS
+
+Client -> RO: Rediriger vers le serveur d'autorisation
+AS -> RO: Demande des informations d'identification de connexion
+RO -> AS: Fournit les informations d'identification de connexion
+AS -> Client: Retourne le code d'autorisation
+Client -> AS: Demande un jeton d'accès
+AS -> RS: Demande un jeton d'accès avec le code d'autorisation
+RS -> AS: Vérifie le code d'autorisation
+AS -> RS: Retourne le jeton d'accès
+AS -> Client: Retourne le jeton d'accès
+Client -> RS: Demande une ressource avec le jeton d'accès
+RS -> Client: Retourne la ressource
+@enduml

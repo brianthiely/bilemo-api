@@ -8,7 +8,6 @@ use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\Groups;
 use Hateoas\Configuration\Annotation as Hateoas;
 
-
 /**
  * @Hateoas\Relation(
  *      "self",
@@ -16,7 +15,6 @@ use Hateoas\Configuration\Annotation as Hateoas;
  *          "get_product_by_id",
  *          parameters = { "productId" = "expr(object.getProductId())" }
  *      ),
- *      exclusion = @Hateoas\Exclusion(groups="products:read")
  * )
  *
  */
@@ -26,24 +24,40 @@ class Product
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['products:read', 'product:read'])]
+    #[Groups(['products:read'])]
     private ?int $productId = null;
 
     #[ORM\Column(length: 42)]
-    #[Groups(['products:read', 'product:read'])]
+    #[Groups(['products:read'])]
     private ?string $name = null;
 
     #[ORM\Column(length: 42)]
-    #[Groups(['products:read', 'product:read'])]
+    #[Groups(['products:read'])]
     private ?string $brand = null;
 
     #[ORM\Column]
-    #[Groups(['products:read', 'product:read'])]
+    #[Groups(['products:read'])]
     private ?int $price = null;
 
     #[ORM\Column(type: Types::TEXT)]
-    #[Groups(['products:read', 'product:read'])]
+    #[Groups(['products:read'])]
     private ?string $description = null;
+
+    #[ORM\Column(length: 512)]
+    #[Groups(['products:read'])]
+    private ?string $picture = null;
+
+    #[ORM\Column]
+    #[Groups(['products:read'])]
+    private int $screenSize;
+
+    #[ORM\Column]
+    #[Groups(['products:read'])]
+    private string $color;
+
+    #[ORM\Column]
+    #[Groups(['products:read'])]
+    private int $storageCapacity;
 
     public function getProductId(): ?int
     {
@@ -97,4 +111,69 @@ class Product
 
         return $this;
     }
+
+    /**
+     * @return string|null
+     */
+    public function getPicture(): ?string
+    {
+        return $this->picture;
+    }
+
+    /**
+     * @param string|null $picture
+     */
+    public function setPicture(?string $picture): void
+    {
+        $this->picture = $picture;
+    }
+
+    /**
+     * @return Float
+     */
+    public function getScreenSize(): float
+    {
+        return $this->screenSize;
+    }
+
+    /**
+     * @param Float $screenSize
+     */
+    public function setScreenSize(float $screenSize): void
+    {
+        $this->screenSize = $screenSize;
+    }
+
+    /**
+     * @return string
+     */
+    public function getColor(): string
+    {
+        return $this->color;
+    }
+
+    /**
+     * @param string $color
+     */
+    public function setColor(string $color): void
+    {
+        $this->color = $color;
+    }
+
+    /**
+     * @return int
+     */
+    public function getStorageCapacity(): int
+    {
+        return $this->storageCapacity;
+    }
+
+    /**
+     * @param int $storageCapacity
+     */
+    public function setStorageCapacity(int $storageCapacity): void
+    {
+        $this->storageCapacity = $storageCapacity;
+    }
+
 }

@@ -1,0 +1,10 @@
+@startuml
+title Consulter la liste des utilisateurs inscrits liés à un client
+
+actor Client
+
+Client -> API : Demande la liste des utilisateurs
+API -> Database : Requête pour récupérer la liste des utilisateurs liés au client
+Database --> API : Renvoie la liste des utilisateurs
+API --> Client : Renvoie la liste des utilisateurs
+@enduml

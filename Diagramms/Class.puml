@@ -1,0 +1,50 @@
+@startuml
+'https://plantuml.com/class-diagram
+Client "0..*" -- "*" Product
+ User "0..*" -- "*" Client
+
+
+class Product {
+    - Integer productId
+    - String name
+    - String brand
+    - Integer price
+    - String description
+    - String picture
+    - Integer screenSize
+    - String color
+    - Integer storageCapacity
+
+    + addProduct()
+    + updateProduct()
+    + deleteProduct()
+}
+
+class Client {
+    - Integer clientId
+    - String company
+    - String contactName
+    - String contactEmail
+    - Date createdAt
+    - ArrayList<User> users
+
+    + addUser(User)
+    + removeUser(User)
+    + ArrayList<User> getUsers()
+
+
+}
+
+class User {
+    - Integer userId
+    - Integer clientId
+    - String name
+    - String email
+    - String password
+
+    + login()
+    + logout()
+
+}
+
+@enduml

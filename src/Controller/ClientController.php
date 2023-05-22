@@ -7,10 +7,12 @@ use App\Entity\User;
 use App\Service\Cache\CacheService;
 use App\Service\Client\RetrievalService;
 use App\Service\Serializer\SerializerService;
+use App\Service\User\UserManager;
+use Psr\Cache\InvalidArgumentException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 use OpenApi\Annotations as OA;
 use Nelmio\ApiDocBundle\Annotation\Model;
@@ -24,11 +26,14 @@ class ClientController extends AbstractController
 
     private SerializerService $serializerService;
 
-    public function __construct(RetrievalService $retrievalService, CacheService $cacheService, SerializerService $serializerService)
+    private UserManager $userManager;
+
+    public function __construct(RetrievalService $retrievalService, CacheService $cacheService, SerializerService $serializerService, UserManager $userManager)
     {
         $this->retrievalService = $retrievalService;
         $this->cacheService = $cacheService;
         $this->serializerService = $serializerService;
+        $this->userManager = $userManager;
 
     }
 
@@ -45,7 +50,7 @@ class ClientController extends AbstractController
      *         description="List of users",
      *         @OA\JsonContent(
      *             type="array",
-     *             @OA\Items(ref=@Model(type=Client::class))
+     *             @OA\Items(ref=@Model(type=User::class))
      *         )
      *     ),
      * )
@@ -65,7 +70,7 @@ class ClientController extends AbstractController
 
             /** @var Client $client */
             $userList = $this->retrievalService->getUserList($client);
-            $jsonUserList = $this->serializerService->serialize($userList, ['user_list']);
+            $jsonUserList = $this->serializerService->serialize($userList, ['users:read']);
 
             $expiresAt = new \DateTimeImmutable('+1 hour');
             $tags = ['usersCache'];
@@ -89,7 +94,7 @@ class ClientController extends AbstractController
      *         description="User",
      *         @OA\JsonContent(
      *             type="array",
-     *             @OA\Items(ref=@Model(type=Client::class))
+     *             @OA\Items(ref=@Model(type=User::class))
      *         )
      *     ),
      * )
@@ -104,11 +109,60 @@ class ClientController extends AbstractController
         $users = $client->getUsers();
 
         if (!$users->contains($user)) {
-            throw new NotFoundHttpException('User not found');
+            throw $this->createNotFoundException('User not found');
         }
 
         $jsonUser = $this->serializerService->serialize($user, ['user:read']);
 
         return new JsonResponse($jsonUser, Response::HTTP_OK, [], true);
     }
+
+
+    /**
+     * Add a user.
+     *
+     * @OA\Post(
+     *     path="/api/users",
+     *     summary="Add a user",
+     *     tags={"Users"},
+     *     @OA\Response(
+     *         response="200",
+     *         description="User",
+     *         @OA\JsonContent(
+     *             type="array",
+     *             @OA\Items(ref=@Model(type=User::class))
+     *         )
+     *     ),
+     *     @OA\RequestBody(
+     *     @OA\JsonContent(
+     *     type="object",
+     *     @OA\Property(property="firstname", type="string"),
+     *     @OA\Property(property="lastname", type="string"),
+     *
+     *     )
+     *    )
+     *
+     * )
+     * @throws InvalidArgumentException
+     */
+    #[Route('/api/users', name: 'add_user', methods: ['POST'])]
+    public function addUser(Request $request): JsonResponse
+    {
+        $data = json_decode($request->getContent(), true);
+
+        /** @var Client $client */
+        $client = $this->getUser();
+
+        $user = $this->userManager->saveUser($data, $client);
+
+        $clientId = $client->getId();
+        $this->cacheService->remove("user_list{$clientId}");
+
+        $jsonUser = $this->serializerService->serialize($user, ['user:read']);
+
+        return new JsonResponse($jsonUser, Response::HTTP_CREATED, [], true);
+    }
+
+
+
 }

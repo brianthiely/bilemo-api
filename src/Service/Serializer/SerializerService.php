@@ -22,4 +22,5 @@ class SerializerService
         return $this->serializer->serialize($object, $format, (array($context)));
     }
 
+
 }

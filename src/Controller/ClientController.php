@@ -114,7 +114,7 @@ class ClientController extends AbstractController
             $user = $this->retrievalService->getUserById($userId);
 
             if (!$users->contains($user)) {
-                throw $this->createNotFoundException('User not found');
+                throw new NotFoundHttpException("User not found");
             }
 
             $jsonUser = $this->serializerService->serialize($user, ['user:read']);
@@ -153,19 +153,16 @@ class ClientController extends AbstractController
      *    )
      *
      * )
-     * @throws InvalidArgumentException
      */
     #[Route('/api/users', name: 'add_user', methods: ['POST'])]
     public function addUser(Request $request): JsonResponse
     {
-        $data = json_decode($request->getContent(), true);
-
         /** @var Client $client */
         $client = $this->getUser();
+        $data = json_decode($request->getContent(), true);
 
-        $user = $this->userManager->saveUser($data, $client);
-
-        $this->cacheService->invalidateTags(['usersCache']);
+        $savedUser = $this->userManager->saveUser($data, $client);
+        $user = $client->addUser($savedUser);
 
         $jsonUser = $this->serializerService->serialize($user, ['user:read']);
 
@@ -215,6 +212,5 @@ class ClientController extends AbstractController
          return new JsonResponse(null, Response::HTTP_NO_CONTENT);
 
     }
-
 
 }

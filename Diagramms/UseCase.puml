@@ -5,7 +5,7 @@ skinparam packageStyle rectangle
 actor Client
 
 rectangle "BileMo API" {
-  usecase "Authentification via OAuth" as UC1
+  usecase "Authentification via JWT" as UC1
   usecase "Consulter la liste des produits BileMo" as UC2
   usecase "Consulter les détails d'un produit BileMo" as UC3
   usecase "Consulter la liste des utilisateurs inscrits" as UC4

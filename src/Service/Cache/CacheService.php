@@ -3,6 +3,7 @@
 namespace App\Service\Cache;
 
 use DateTimeInterface;
+use Psr\Cache\InvalidArgumentException;
 use Symfony\Contracts\Cache\TagAwareCacheInterface;
 
 class CacheService
@@ -57,5 +58,14 @@ class CacheService
         }
 
         return $item->get();
+    }
+
+
+    /**
+     * @throws InvalidArgumentException
+     */
+    public function invalidateTags(array $array): void
+    {
+        $this->cache->invalidateTags($array);
     }
 }

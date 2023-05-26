@@ -28,5 +28,4 @@ class RetrievalService
         return $this->userRepository->find($userId);
     }
 
-
 }

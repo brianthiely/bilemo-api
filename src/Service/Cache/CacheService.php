@@ -64,8 +64,8 @@ class CacheService
     /**
      * @throws InvalidArgumentException
      */
-    public function remove(string $key): void
+    public function invalidateTags(array $array): void
     {
-        $this->cache->delete($key);
+        $this->cache->invalidateTags($array);
     }
 }

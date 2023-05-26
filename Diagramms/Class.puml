@@ -22,10 +22,9 @@ class Product {
 
 class Client {
     - Integer clientId
-    - String company
-    - String contactName
-    - String contactEmail
-    - Date createdAt
+    - String email
+    - String password
+    - String roles
     - ArrayList<User> users
 
     + addUser(User)
@@ -38,12 +37,8 @@ class Client {
 class User {
     - Integer userId
     - Integer clientId
-    - String name
-    - String email
-    - String password
-
-    + login()
-    + logout()
+    - String firstname
+    - String lastname
 
 }
 

@@ -13,6 +13,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 use OpenApi\Annotations as OA;
 use Nelmio\ApiDocBundle\Annotation\Model;
@@ -104,15 +105,24 @@ class ClientController extends AbstractController
     {
         /** @var Client $client */
         $client = $this->getUser();
-        $user = $this->retrievalService->getUserById($userId);
-
         $users = $client->getUsers();
 
-        if (!$users->contains($user)) {
-            throw $this->createNotFoundException('User not found');
-        }
+        $key = "user{$userId}";
+        $jsonUser = $this->cacheService->get($key);
 
-        $jsonUser = $this->serializerService->serialize($user, ['user:read']);
+        if ($jsonUser === null) {
+            $user = $this->retrievalService->getUserById($userId);
+
+            if (!$users->contains($user)) {
+                throw $this->createNotFoundException('User not found');
+            }
+
+            $jsonUser = $this->serializerService->serialize($user, ['user:read']);
+
+            $expiresAt = new \DateTimeImmutable('+1 hour');
+            $tags = ['usersCache'];
+            $this->cacheService->cache($key, $jsonUser, $expiresAt, $tags);
+        }
 
         return new JsonResponse($jsonUser, Response::HTTP_OK, [], true);
     }
@@ -155,14 +165,56 @@ class ClientController extends AbstractController
 
         $user = $this->userManager->saveUser($data, $client);
 
-        $clientId = $client->getId();
-        $this->cacheService->remove("user_list{$clientId}");
+        $this->cacheService->invalidateTags(['usersCache']);
 
         $jsonUser = $this->serializerService->serialize($user, ['user:read']);
 
         return new JsonResponse($jsonUser, Response::HTTP_CREATED, [], true);
     }
 
+
+    /**
+     * Delete a user.
+     *
+     * @OA\Delete(
+     *     path="/api/users/{userId}",
+     *     summary="Delete a user",
+     *     tags={"Users"},
+     *     @OA\Response(
+     *     response="204",
+     *     description="User deleted"
+     *    )
+     * )
+     *
+     *
+     * @param int $userId
+     * @return JsonResponse
+     * @throws InvalidArgumentException
+     */
+    #[Route('/api/users/{userId}', name: 'delete_user', methods: ['DELETE'])]
+    public function deleteUser(int $userId): JsonResponse
+    {
+        /** @var Client $client */
+       $client = $this->getUser();
+       $users = $client->getUsers();
+
+       $user = $this->cacheService->get("user{$userId}");
+
+         if ($user === null) {
+              $user = $this->retrievalService->getUserById($userId);
+         }
+
+       if ($users->contains($user)) {
+           $this->userManager->deleteUser($user);
+       } else {
+           throw new NotFoundHttpException("User not found");
+       }
+
+         $this->cacheService->invalidateTags(['usersCache']);
+
+         return new JsonResponse(null, Response::HTTP_NO_CONTENT);
+
+    }
 
 
 }

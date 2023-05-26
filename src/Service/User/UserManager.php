@@ -16,6 +16,7 @@ class UserManager
         $this->em = $em;
     }
 
+
     public function saveUser($data, Client $client): User
     {
         $user = new User();
@@ -28,6 +29,14 @@ class UserManager
         $this->em->flush();
 
         return $user;
+    }
+
+    public function deleteUser(?User $user): void
+    {
+        if ($user) {
+            $this->em->remove($user);
+            $this->em->flush();
+        }
     }
 
 }

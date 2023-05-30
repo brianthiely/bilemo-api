@@ -77,6 +77,7 @@ class ProductController extends AbstractController
      * )
      *
      *
+     *
      * @return JsonResponse
      * @throws BadRequestHttpException
      */

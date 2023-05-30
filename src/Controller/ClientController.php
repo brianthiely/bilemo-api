@@ -13,6 +13,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 use OpenApi\Annotations as OA;
@@ -56,7 +57,7 @@ class ClientController extends AbstractController
      *     ),
      * )
      */
-    #[Route('/api/users', name: 'client', methods: ['GET'])]
+    #[Route('/api/users', name: 'get_all_users', methods: ['GET'])]
     public function getAllUsers(): JsonResponse
     {
         /** @var Client $client */
@@ -100,11 +101,16 @@ class ClientController extends AbstractController
      *     ),
      * )
      */
-    #[Route('/api/users/{userId}', name: 'client_by_id', methods: ['GET'])]
+    #[Route('/api/users/{userId}', name: 'get_user_by_id', methods: ['GET'])]
     public function getUserById(int $userId): JsonResponse
     {
         /** @var Client $client */
         $client = $this->getUser();
+
+        if ($client === null) {
+            throw new AccessDeniedHttpException("Access denied");
+        }
+
         $users = $client->getUsers();
 
         $key = "user{$userId}";
@@ -164,7 +170,7 @@ class ClientController extends AbstractController
         $savedUser = $this->userManager->saveUser($data, $client);
         $user = $client->addUser($savedUser);
 
-        $jsonUser = $this->serializerService->serialize($user, ['user:read']);
+        $jsonUser = $this->serializerService->serialize($user, ['users:read']);
 
         return new JsonResponse($jsonUser, Response::HTTP_CREATED, [], true);
     }
@@ -188,7 +194,7 @@ class ClientController extends AbstractController
      * @return JsonResponse
      * @throws InvalidArgumentException
      */
-    #[Route('/api/users/{userId}', name: 'delete_user', methods: ['DELETE'])]
+    #[Route('/api/users/{userId}', name: 'delete_user_by_id', methods: ['DELETE'])]
     public function deleteUser(int $userId): JsonResponse
     {
         /** @var Client $client */

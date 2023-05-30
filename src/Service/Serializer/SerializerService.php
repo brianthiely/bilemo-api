@@ -3,7 +3,7 @@
 namespace App\Service\Serializer;
 
 use JMS\Serializer\SerializationContext;
-use Symfony\Component\Serializer\SerializerInterface;
+use JMS\Serializer\SerializerInterface;
 
 class SerializerService
 {
@@ -17,9 +17,8 @@ class SerializerService
 
     public function serialize($object, array $groups, string $format = 'json'): string
     {
-        $context ??= new SerializationContext();
-        $context->setGroups($groups);
-        return $this->serializer->serialize($object, $format, (array($context)));
+        $context = SerializationContext::create()->setGroups($groups);
+        return $this->serializer->serialize($object, $format, $context);
     }
 
 

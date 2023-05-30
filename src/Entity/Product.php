@@ -15,6 +15,7 @@ use Hateoas\Configuration\Annotation as Hateoas;
  *          "get_product_by_id",
  *          parameters = { "productId" = "expr(object.getProductId())" }
  *      ),
+ *     exclusion = @Hateoas\Exclusion(groups = {"products:read"})
  * )
  *
  */
@@ -24,39 +25,39 @@ class Product
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['products:read'])]
+    #[Groups(['products:read', 'product:read'])]
     private ?int $productId = null;
 
     #[ORM\Column(length: 42)]
-    #[Groups(['products:read'])]
+    #[Groups(['products:read', 'product:read'])]
     private ?string $name = null;
 
     #[ORM\Column(length: 42)]
-    #[Groups(['products:read'])]
+    #[Groups(['products:read', 'product:read'])]
     private ?string $brand = null;
 
     #[ORM\Column]
-    #[Groups(['products:read'])]
+    #[Groups(['products:read', 'product:read'])]
     private ?int $price = null;
 
     #[ORM\Column(type: Types::TEXT)]
-    #[Groups(['products:read'])]
+    #[Groups(['product:read'])]
     private ?string $description = null;
 
     #[ORM\Column(length: 512)]
-    #[Groups(['products:read'])]
+    #[Groups(['product:read'])]
     private ?string $picture = null;
 
     #[ORM\Column]
-    #[Groups(['products:read'])]
+    #[Groups(['product:read'])]
     private int $screenSize;
 
     #[ORM\Column]
-    #[Groups(['products:read'])]
+    #[Groups(['product:read'])]
     private string $color;
 
     #[ORM\Column]
-    #[Groups(['products:read'])]
+    #[Groups(['product:read'])]
     private int $storageCapacity;
 
     public function getProductId(): ?int

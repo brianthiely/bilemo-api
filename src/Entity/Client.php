@@ -30,8 +30,10 @@ class Client implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private ?string $password = null;
 
-    #[ORM\ManyToMany(targetEntity: User::class)]
+    #[ORM\OneToMany(mappedBy: 'client', targetEntity: User::class, cascade: ['persist'])]
     private Collection $users;
+
+
 
     public function __construct()
     {
@@ -124,6 +126,7 @@ class Client implements UserInterface, PasswordAuthenticatedUserInterface
     {
         if (!$this->users->contains($user)) {
             $this->users->add($user);
+            $user->setClient($this);
         }
 
         return $this;
@@ -131,9 +134,15 @@ class Client implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function removeUser(User $user): self
     {
-        $this->users->removeElement($user);
+        if ($this->users->removeElement($user)) {
+            // set the owning side to null (unless already changed)
+            if ($user->getClient() === $this) {
+                $user->setClient(null);
+            }
+        }
 
         return $this;
     }
+
 
 }

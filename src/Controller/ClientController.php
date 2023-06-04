@@ -6,6 +6,7 @@ use App\Entity\Client;
 use App\Entity\User;
 use App\Service\Cache\CacheService;
 use App\Service\Client\RetrievalService;
+use App\Service\Pagination\PaginationService;
 use App\Service\Serializer\SerializerService;
 use App\Service\User\UserManager;
 use Psr\Cache\InvalidArgumentException;
@@ -18,6 +19,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 use OpenApi\Annotations as OA;
 use Nelmio\ApiDocBundle\Annotation\Model;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 
 class ClientController extends AbstractController
@@ -30,12 +32,18 @@ class ClientController extends AbstractController
 
     private UserManager $userManager;
 
-    public function __construct(RetrievalService $retrievalService, CacheService $cacheService, SerializerService $serializerService, UserManager $userManager)
+    private ValidatorInterface $validator;
+
+    private PaginationService $paginationService;
+
+    public function __construct(RetrievalService $retrievalService, CacheService $cacheService, SerializerService $serializerService, UserManager $userManager, ValidatorInterface $validator, PaginationService $paginationService)
     {
         $this->retrievalService = $retrievalService;
         $this->cacheService = $cacheService;
         $this->serializerService = $serializerService;
         $this->userManager = $userManager;
+        $this->validator = $validator;
+        $this->paginationService = $paginationService;
 
     }
 
@@ -55,22 +63,36 @@ class ClientController extends AbstractController
      *             @OA\Items(ref=@Model(type=User::class))
      *         )
      *     ),
+     *      @OA\Parameter(
+     *         name="offset",
+     *         in="query",
+     *         description="Page number to retrieve",
+     *         required=false,
+     *         @OA\Schema(type="integer", default="1")
+     *     ),
+     *     @OA\Parameter(
+     *         name="limit",
+     *         in="query",
+     *         description="Number of users to retrieve per page",
+     *         required=false,
+     *         @OA\Schema(type="integer", default="3")
+     *     ),
+     *     @OA\Response(response="401", description="Unauthorized"),
      * )
+     *
      */
-    #[Route('/api/users', name: 'get_all_users', methods: ['GET'])]
+    #[Route('/api/users', name: 'get_users', methods: ['GET'])]
     public function getAllUsers(): JsonResponse
     {
-        /** @var Client $client */
-        $client = $this->getUser();
-        $clientId = $client->getId();
+        $offset = $this->paginationService->getOffset();
+        $limit = $this->paginationService->getLimit();
 
-        $key = "user_list{$clientId}";
+        $key = "user_list_{$offset}_{$limit}";
         $jsonUserList = $this->cacheService->get($key);
 
         if ($jsonUserList === null) {
-            $client = $this->getUser();
-
             /** @var Client $client */
+            $client = $this->getUser();
             $userList = $this->retrievalService->getUserList($client);
             $jsonUserList = $this->serializerService->serialize($userList, ['users:read']);
 
@@ -159,18 +181,32 @@ class ClientController extends AbstractController
      *    )
      *
      * )
+     * @throws InvalidArgumentException
      */
     #[Route('/api/users', name: 'add_user', methods: ['POST'])]
     public function addUser(Request $request): JsonResponse
     {
         /** @var Client $client */
         $client = $this->getUser();
-        $data = json_decode($request->getContent(), true);
 
-        $savedUser = $this->userManager->saveUser($data, $client);
-        $user = $client->addUser($savedUser);
+        $form = $this->serializerService->deserialize($request->getContent(), User::class);
 
-        $jsonUser = $this->serializerService->serialize($user, ['users:read']);
+        $errors = $this->validator->validate($form);
+        if ($errors->count() > 0) {
+            return new JsonResponse($this->serializerService->serialize($errors, ['errors:read']), Response::HTTP_BAD_REQUEST, [], true);
+        }
+
+        $savedUser = $this->userManager->saveUser($form, $client);
+
+        $client->addUser($savedUser);
+
+        $offset = $this->paginationService->getOffset();
+        $limit = $this->paginationService->getLimit();
+
+        $key = "user_list_{$offset}_{$limit}";
+        $this->cacheService->delete($key);
+
+        $jsonUser = $this->serializerService->serialize($form, ['users:read']);
 
         return new JsonResponse($jsonUser, Response::HTTP_CREATED, [], true);
     }
@@ -213,7 +249,8 @@ class ClientController extends AbstractController
            throw new NotFoundHttpException("User not found");
        }
 
-         $this->cacheService->invalidateTags(['usersCache']);
+         $key = "user{$userId}";
+         $this->cacheService->delete($key);
 
          return new JsonResponse(null, Response::HTTP_NO_CONTENT);
 

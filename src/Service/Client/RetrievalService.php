@@ -2,25 +2,31 @@
 
 namespace App\Service\Client;
 
-use App\Entity\Client;
 use App\Entity\User;
 use App\Repository\UserRepository;
-use Doctrine\Common\Collections\Collection;
+use App\Service\Pagination\PaginationService;
 
 
 class RetrievalService
 {
     private UserRepository $userRepository;
 
-    public function __construct(UserRepository $userRepository)
+    private PaginationService $paginationService;
+
+    public function __construct(UserRepository $userRepository, PaginationService $paginationService)
     {
         $this->userRepository = $userRepository;
+        $this->paginationService = $paginationService;
 
     }
 
-    public function getUserList(Client $client): Collection
+    public function getUserList($client): array
     {
-        return $client->getUsers();
+        $clientId = $client->getId();
+
+        $offset = $this->paginationService->getOffset();
+        $limit = $this->paginationService->getLimit();
+        return $this->userRepository->findUsersByClientIdWithPagination($clientId, $offset, $limit);
     }
 
     public function getUserById(int $userId): ?User

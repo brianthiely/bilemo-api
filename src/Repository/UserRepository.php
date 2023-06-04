@@ -39,6 +39,18 @@ class UserRepository extends ServiceEntityRepository
         }
     }
 
+    public function findUsersByClientIdWithPagination(int $clientId, int $offset, int $limit): array
+    {
+        $userQueryBuilder = $this->createQueryBuilder('user')
+            ->join('user.client', 'client')
+            ->where('client.id = :clientId')
+            ->setParameter('clientId', $clientId)
+            ->setFirstResult(($offset - 1) * $limit)
+            ->setMaxResults($limit);
+
+        return $userQueryBuilder->getQuery()->getResult();
+    }
+
 //    /**
 //     * @return User[] Returns an array of User objects
 //     */

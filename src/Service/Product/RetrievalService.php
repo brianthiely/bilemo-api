@@ -4,9 +4,7 @@ namespace App\Service\Product;
 
 use App\Entity\Product;
 use App\Repository\ProductRepository;
-use App\Service\Serializer\SerializerService;
-use JMS\Serializer\SerializationContext;
-use JMS\Serializer\SerializerInterface;
+use App\Service\Pagination\PaginationService;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 

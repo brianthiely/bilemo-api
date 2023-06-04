@@ -60,6 +60,14 @@ class CacheService
         return $item->get();
     }
 
+    /**
+     * @throws InvalidArgumentException
+     */
+    public function delete(string $key): void
+    {
+        $this->cache->delete($key);
+    }
+
 
     /**
      * @throws InvalidArgumentException

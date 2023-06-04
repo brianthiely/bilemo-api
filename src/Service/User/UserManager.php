@@ -17,15 +17,13 @@ class UserManager
     }
 
 
-    public function saveUser($data, Client $client): User
+    public function saveUser($form, $client): User
     {
         $user = new User();
-        $user->setFirstname($data['firstname']);
-        $user->setLastname($data['lastname']);
-
+        $user->setFirstname($form->getFirstname());
+        $user->setLastname($form->getLastname());
         $client->addUser($user);
-
-        $this->em->persist($user);
+        $this->em->persist($form);
         $this->em->flush();
 
         return $user;

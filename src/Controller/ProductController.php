@@ -4,7 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Product;
 use App\Service\Cache\CacheService;
-use App\Service\Product\PaginationService;
+use App\Service\Pagination\PaginationService;
 use App\Service\Product\RetrievalService;
 use App\Service\Serializer\SerializerService;
 use Nelmio\ApiDocBundle\Annotation\Model;
@@ -81,7 +81,7 @@ class ProductController extends AbstractController
      * @return JsonResponse
      * @throws BadRequestHttpException
      */
-    #[Route('/api/products', name: 'get_products_paginated', methods: ['GET'])]
+    #[Route('/api/products', name: 'get_products', methods: ['GET'])]
     public function getAllProducts(): JsonResponse
     {
         $offset = $this->paginationService->getOffset();
@@ -140,8 +140,8 @@ class ProductController extends AbstractController
 
         if ($jsonProduct === null) {
             $product = $this->retrievalService->getProductById($productId);
-            $jsonProduct = $this->serializerService->serialize($product, ['products:read']);
 
+            $jsonProduct = $this->serializerService->serialize($product, ['products:read']);
             $expiresAt = new \DateTimeImmutable('+1 hour');
             $tags = ['productsCache'];
             $this->cacheService->cache($key, $jsonProduct, $expiresAt, $tags);

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Service\Product;
+namespace App\Service\Pagination;
 
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;

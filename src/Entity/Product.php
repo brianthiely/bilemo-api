@@ -18,6 +18,15 @@ use Hateoas\Configuration\Annotation as Hateoas;
  *     exclusion = @Hateoas\Exclusion(groups = {"products:read"})
  * )
  *
+ * @Hateoas\Relation(
+ *     "list",
+ *     href = @Hateoas\Route(
+ *     "get_products",
+ *     ),
+ *     exclusion = @Hateoas\Exclusion(groups = {"products:read"})
+ * )
+ *
+ *
  */
 #[ORM\Entity(repositoryClass: ProductRepository::class)]
 class Product

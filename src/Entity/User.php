@@ -6,6 +6,7 @@ use App\Repository\UserRepository;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation\Groups;
 use Hateoas\Configuration\Annotation as Hateoas;
+use Symfony\Component\Validator\Constraints as Assert;
 
 
 /**
@@ -17,6 +18,15 @@ use Hateoas\Configuration\Annotation as Hateoas;
  *      ),
  *     exclusion = @Hateoas\Exclusion(groups = {"users:read"})
  * )
+ *
+ * @Hateoas\Relation(
+ *     "list",
+ *     href = @Hateoas\Route(
+ *     "get_users",
+ *     ),
+ *     exclusion = @Hateoas\Exclusion(groups = {"users:read"})
+ * )
+ *
  *
  * @Hateoas\Relation(
  *     "delete",
@@ -39,11 +49,16 @@ class User
 
     #[ORM\Column(length: 255)]
     #[Groups(['users:read', 'user:read'])]
+    #[Assert\NotBlank(message: "Firstname is required")]
     private ?string $firstname = null;
 
     #[ORM\Column(length: 255)]
     #[Groups(['users:read', 'user:read'])]
+    #[Assert\NotBlank(message: "Lastname is required")]
     private ?string $lastname = null;
+
+    #[ORM\ManyToOne(inversedBy: 'users')]
+    private ?Client $client = null;
 
     public function getId(): ?int
     {
@@ -70,6 +85,18 @@ class User
     public function setLastname(string $lastname): self
     {
         $this->lastname = $lastname;
+
+        return $this;
+    }
+
+    public function getClient(): ?Client
+    {
+        return $this->client;
+    }
+
+    public function setClient(?Client $client): self
+    {
+        $this->client = $client;
 
         return $this;
     }
